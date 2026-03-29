@@ -1,7 +1,6 @@
 import { MyArray } from "../../data_structures/array.js";
 
 const reverseArray = (nums: MyArray<number>, start: number, end: number) => {
-    console.log(start, end);
     const size = end -  start;
 
     let swapIndex = end - 1
@@ -36,12 +35,12 @@ const rotateArray = (nums: MyArray<number>, k: number) => {
     // Reverse first p elements [0,...,p)
     reverseArray(nums, 0, pivotIndex);
 
-    console.log('Reverse first sub array', printVisualRepresentation(nums, 0, k));
+    console.log('Reverse first sub array', printVisualRepresentation(nums, 0, pivotIndex));
 
     // Reverse rest of elements [p,...,S)
     reverseArray(nums, pivotIndex, nums.getSize())
 
-    console.log('Reverse second sub array', printVisualRepresentation(nums, k, nums.getSize()));
+    console.log('Reverse second sub array', printVisualRepresentation(nums, pivotIndex, nums.getSize()));
     
 };
 
