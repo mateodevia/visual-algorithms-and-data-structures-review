@@ -4,7 +4,7 @@ import { executeMain, runCLI } from "../cli.js";
  * A generic dynamic array backed by a hash map (object).
  * Supports O(1) get/set and O(n) delete (due to shifting).
  */
-export class MyArray<T> {
+class MyArray<T> {
 
     private length: number;
 
@@ -120,10 +120,12 @@ export class MyArray<T> {
 executeMain('array.ts', () => {
     runCLI({
         s: ([index, value], arr) => arr.set(Number(index), Number(value)),
-        g: ([index], arr) => arr.get(Number(index)),
+        g: ([index], arr) => console.log('Retrieved value', arr.get(Number(index))),
         pu: ([value], arr) => arr.push(Number(value)),
         po: ([], arr) => arr.pop(),
         sh: ([index], arr) => arr.shiftLeft(Number(index)),
         d: ([index], arr) => arr.delete(Number(index)),
     }, () => new MyArray(true))
 });
+
+export default MyArray;

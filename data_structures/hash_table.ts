@@ -1,4 +1,5 @@
-import { MyArray } from "./array.js";
+import { executeMain, runCLI } from "../cli.js";
+import MyArray from "./array.js";
 import MyList from "./list.js";
 
 class MyHashTable<T> {
@@ -48,4 +49,34 @@ class MyHashTable<T> {
         return result;
     }
 
+    getVisualElements(): string[] {
+        return Array.from({ length: this.data.getSize() }, (_, index) => {
+            const bucket = this.data.get(index);
+            if (!bucket) return `${index}: _`;
+
+            const entries: string[] = [];
+            bucket.forEach((keyValue) => {
+                if (keyValue) {
+                    entries.push(`${keyValue[0]}:${String(keyValue[1])}`);
+                }
+            });
+
+            return `${index}: ${entries.length ? entries.join(" -> ") : "_"}`;
+        });
+    }
+
+    printVisualRepresentation() {
+        console.log(`[ ${this.getVisualElements().join(" | ")} ]`);
+    }
+
 }
+
+
+executeMain('hash_table.ts', () => {
+    runCLI({
+        s: ([key, value], arr) => arr.set(key, Number(value)),
+        g: ([key], arr) => console.log('Retrieved value', arr.get(key)),
+    }, () => new MyHashTable(5, true))
+});
+
+export default MyHashTable;

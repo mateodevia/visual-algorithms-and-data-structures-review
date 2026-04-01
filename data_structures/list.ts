@@ -1,4 +1,4 @@
-import { runCLI } from "../cli.js";
+import { executeMain, runCLI } from "../cli.js";
 
 class MyList<T> {
 
@@ -63,16 +63,11 @@ class MyList<T> {
     }
 }
 
-function main() {
-    const list = new MyList(5, true)
-    return list;
-}
-
-const isMain = process.argv[1]?.endsWith("list.js");
-if (isMain) {
+executeMain('list.ts', () => {
     runCLI({
-        s: ([index, value], l) => l.set(Number(index), Number(value)),
-    }, main);
-}
+        s: ([index, value], list) => list.set(Number(index), Number(value)),
+        g: ([index], list) => console.log('Retrieved value', list.get(Number(index))),
+    }, () => new MyList(5, true))
+});
 
 export default MyList;
