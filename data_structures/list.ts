@@ -1,6 +1,11 @@
 import { runCLI } from "../cli.js";
 
-class List {
+class MyList<T> {
+
+    private items: (T | undefined)[];
+    
+    private size: number;
+
     constructor(pSize: number, enableLogs?: boolean) {
         this.items = new Array(pSize).fill(undefined);
         this.size = pSize;
@@ -9,10 +14,6 @@ class List {
             this.printVisualRepresentation();
         }
     }
-
-    private items: (number | undefined)[] = [];
-    
-    private size: number;
 
     get(index: number) {
         return this.items[index];
@@ -26,12 +27,27 @@ class List {
         return this.size;
     }
 
-    getSubList (firstIndex: number, lastIndex: number) {
-        const subList = new List(lastIndex - firstIndex + 1);
+    getSubList (firstIndex: number, lastIndex: number): MyList<T> {
+        const subList = new MyList<T>(lastIndex - firstIndex + 1);
         for (let i = firstIndex; i <= lastIndex; i++) {
             subList.set(i-firstIndex, this.items[i]);
         }
         return subList;
+    }
+
+    find(callback: (item?: T) => boolean): T | undefined {
+        let found = false;
+        for (let i = 0 ; i < this.size; i++) {
+            found = callback(this.items[i])
+            if (found) return this.items[i]
+        }
+        return undefined
+    }
+
+    forEach(callback: (item?: T, i?: number) => void): void {
+        for (let i = 0 ; i < this.size; i++) {
+            callback(this.items[i], i);
+        }
     }
 
     printVisualRepresentation(): void {
@@ -48,7 +64,7 @@ class List {
 }
 
 function main() {
-    const list = new List(5, true)
+    const list = new MyList(5, true)
     return list;
 }
 
@@ -59,4 +75,4 @@ if (isMain) {
     }, main);
 }
 
-export default List;
+export default MyList;

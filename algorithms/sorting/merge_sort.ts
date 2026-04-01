@@ -1,11 +1,11 @@
-import List from "../../data_structures/list.js";
+import MyList from "../../data_structures/list.js";
 import { buildPointerRows } from "../../cli.js";
 
-const merge = (list1: List, list2: List, order: "asc" | "desc" = "asc"): List => {
+const merge = (list1: MyList<number>, list2: MyList<number>, order: "asc" | "desc" = "asc"): MyList<number> => {
     console.log("--------------------------------");
     console.log('MERGING')
 
-    const mergedList = new List(list1.getSize() + list2.getSize());
+    const mergedList = new MyList<number>(list1.getSize() + list2.getSize());
 
     /* Index to iterate over list1 */
     let i = 0;
@@ -59,7 +59,7 @@ const merge = (list1: List, list2: List, order: "asc" | "desc" = "asc"): List =>
  *   - Worst case:   O(n log n) — same as best case; no early termination
  * Space complexity: O(n)       — creates new sub-lists at each recursive level
  */
-export const mergeSort = (list: List, order: "asc" | "desc" = "asc"): List => {
+export const mergeSort = (list: MyList<number>, order: "asc" | "desc" = "asc"): MyList<number> => {
 
     if (list.getSize() === 1) return list;
 
@@ -71,8 +71,8 @@ export const mergeSort = (list: List, order: "asc" | "desc" = "asc"): List => {
     const length2 = list.getSize() - length1;
 
     // Clone the list into two separate lists
-    const list1 = new List(length1);
-    const list2 = new List(length2);
+    const list1 = new MyList<number>(length1);
+    const list2 = new MyList<number>(length2);
 
     for(let i = 0; i < length1; i++) {
         list1.set(i, list.get(i));
@@ -96,7 +96,7 @@ const printWithPointers = (label: string, elements: string[], pointers: Record<n
         .forEach(row => console.log(" ".repeat(label.length) + row));
 };
 
-const printVisualRepresentation = (mergedList: List, i: number, j: number, k: number, nextItem: number, list1?: List, list2?: List) => {
+const printVisualRepresentation = (mergedList: MyList<number>, i: number, j: number, k: number, nextItem: number, list1?: MyList<number>, list2?: MyList<number>) => {
     list1 ? printWithPointers("List 1: ", list1.getVisualElements(), { [i]: "i" }) : console.log('List 1: DONE');
     list2 ? printWithPointers("List 2: ", list2.getVisualElements(), { [j]: "j" }) : console.log('List 2: DONE');
     console.log('');
@@ -107,7 +107,7 @@ const printVisualRepresentation = (mergedList: List, i: number, j: number, k: nu
 }
 
 function main() {
-    const list = new List(5);
+    const list = new MyList<number>(5);
     list.set(0, Math.floor(Math.random() * 100));
     list.set(1, Math.floor(Math.random() * 100));
     list.set(2, Math.floor(Math.random() * 100));

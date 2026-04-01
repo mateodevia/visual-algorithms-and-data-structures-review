@@ -50,9 +50,15 @@ export async function runCLI<T extends Visualizable>(
             console.log(`Unknown command. Available: ${available}`);
         }
 
-        console.log(context.printVisualRepresentation());
+        context.printVisualRepresentation();
         rl.prompt();
     }
 
     console.log("Goodbye!");
+}
+
+
+export const executeMain = (fileName: string, callback: () => void) => {
+    const isMain = process.argv[1]?.endsWith(fileName);
+    if (isMain) callback();
 }

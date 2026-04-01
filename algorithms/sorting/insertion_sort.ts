@@ -1,7 +1,7 @@
-import List from "../../data_structures/list.js";
+import MyList from "../../data_structures/list.js";
 import { buildPointerRows } from "../../cli.js";
 
-const swap = (list: List, i: number, j: number): void => {
+const swap = (list: MyList<number>, i: number, j: number): void => {
     const temp = list.get(i);
     list.set(i, list.get(j));
     list.set(j, temp);
@@ -18,7 +18,7 @@ const swap = (list: List, i: number, j: number): void => {
  *   - Worst case:   O(n²)  — reverse sorted; each element shifts all the way left
  * Space complexity: O(1)   — sorts in place, no auxiliary data structures
  */
-export const insertionSort = (list: List, order: "asc" | "desc" = "asc") => {
+export const insertionSort = (list: MyList<number>, order: "asc" | "desc" = "asc") => {
     console.log("--------------------------------");
     console.log("INSERTION SORT:");
     console.log("");
@@ -46,7 +46,7 @@ export const insertionSort = (list: List, order: "asc" | "desc" = "asc") => {
     printVisualRepresentation(list, list.getSize(), 0);
 };
 
-const printVisualRepresentation = (list: List, i: number, j: number) => {
+const printVisualRepresentation = (list: MyList<number>, i: number, j: number) => {
     const n = list.getSize();
     const elements = Array.from({ length: n }, (_, k) => {
         const val = list.get(k);
@@ -82,7 +82,7 @@ const printVisualRepresentation = (list: List, i: number, j: number) => {
 };
 
 function main() {
-    const list = new List(5, true);
+    const list = new MyList<number>(5, true);
     list.set(0, Math.floor(Math.random() * 100));
     list.set(1, Math.floor(Math.random() * 100));
     list.set(2, Math.floor(Math.random() * 100));

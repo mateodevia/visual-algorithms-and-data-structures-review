@@ -1,4 +1,4 @@
-import List from "../../data_structures/list.js";
+import MyList from "../../data_structures/list.js";
 
 const VISUAL_DEPTH_LIMIT = 3;
 
@@ -15,7 +15,7 @@ const VISUAL_DEPTH_LIMIT = 3;
  * Time complexity:  O(n^d) — n coin denominations, d = debt/smallest coin (exponential)
  * Space complexity: O(d)   — call stack depth proportional to debt
  */
-const greedyChange = (coinSet: List, debt: number, depth: number = 0, verbose: boolean = true): number => {
+const greedyChange = (coinSet: MyList<number>, debt: number, depth: number = 0, verbose: boolean = true): number => {
     const indent = "  ".repeat(depth);
 
     if (debt === 0) return 0;
@@ -71,7 +71,7 @@ const greedyChange = (coinSet: List, debt: number, depth: number = 0, verbose: b
 
 const isMain = process.argv[1]?.endsWith("coin_change.js");
 if (isMain) {
-    const coins = new List(5);
+    const coins = new MyList<number>(5);
     coins.set(0, 1);
     coins.set(1, 5);
     coins.set(2, 10);

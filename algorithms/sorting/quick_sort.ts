@@ -1,7 +1,7 @@
-import List from "../../data_structures/list.js";
+import MyList from "../../data_structures/list.js";
 import { buildPointerRows } from "../../cli.js";
 
-const swap = (list: List, i: number, j: number): void => {
+const swap = (list: MyList<number>, i: number, j: number): void => {
     const temp = list.get(i);
     list.set(i, list.get(j));
     list.set(j, temp);
@@ -20,7 +20,7 @@ const swap = (list: List, i: number, j: number): void => {
  * Time complexity:  O(n) — scans each element in the subarray once
  * Space complexity: O(1) — partitions in place
  */
-const partition = (list: List, low: number, high:number, order: "asc" | "desc" = "asc"): number => {
+const partition = (list: MyList<number>, low: number, high:number, order: "asc" | "desc" = "asc"): number => {
     const pivot = list.get(low)!; // choose the first element as pivot
     console.log('---------------------------------------------------')
     console.log(`Partitioning sub array [${list.getSubList(low + 1, high).getVisualElements()}] with pivot: ${pivot}`);
@@ -73,7 +73,7 @@ const partition = (list: List, low: number, high:number, order: "asc" | "desc" =
  *   - Worst case:   O(n²)     — pivot is always the smallest or largest element (e.g. sorted input)
  * Space complexity: O(log n)  — recursive call stack depth
  */
-export const quickSort = (list: List, low?: number, high?:number, order: "asc" | "desc" = "asc") => {
+export const quickSort = (list: MyList<number>, low?: number, high?:number, order: "asc" | "desc" = "asc") => {
 
     const l = low ?? 0;
     const h = high ?? list.getSize() - 1;
@@ -86,7 +86,7 @@ export const quickSort = (list: List, low?: number, high?:number, order: "asc" |
 
 }
 
-const printVisualRepresentation = (list: List, pivotIndex: number, i: number, j: number, pivotFinalIndex?: number) => {
+const printVisualRepresentation = (list: MyList<number>, pivotIndex: number, i: number, j: number, pivotFinalIndex?: number) => {
     const elements: string[] = [];
     for (let k = 0; k < list.getSize(); k++) {
         const val = list.get(k);
@@ -129,7 +129,7 @@ const printVisualRepresentation = (list: List, pivotIndex: number, i: number, j:
 };
 
 function main() {
-    const list = new List(5);
+    const list = new MyList<number>(5);
     list.set(0, Math.floor(Math.random() * 100));
     list.set(1, Math.floor(Math.random() * 100));
     list.set(2, Math.floor(Math.random() * 100));
