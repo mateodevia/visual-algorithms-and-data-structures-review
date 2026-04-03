@@ -1,4 +1,4 @@
-import { MyArray } from "../../data_structures/array.js";
+import MyArray from "../../data_structures/array.js";
 
 const reverseArray = (nums: MyArray<number>, start: number, end: number) => {
     const size = end -  start;
@@ -21,16 +21,16 @@ const reverseArray = (nums: MyArray<number>, start: number, end: number) => {
  */
 const rotateArray = (nums: MyArray<number>, k: number) => {
 
-    if (nums.getSize() <= 1) return;
+    if (nums.getLength() <= 1) return;
 
     console.log('Initial Array', nums.getVisualElements());
     
     // Reverse all the array [0,...,S)
-    reverseArray(nums, 0, nums.getSize());
+    reverseArray(nums, 0, nums.getLength());
 
-    console.log('Reverse complete array', printVisualRepresentation(nums, 0, nums.getSize()));
+    console.log('Reverse complete array', printVisualRepresentation(nums, 0, nums.getLength()));
 
-    const pivotIndex = k % nums.getSize();
+    const pivotIndex = k % nums.getLength();
 
     // Reverse first p elements [0,...,p)
     reverseArray(nums, 0, pivotIndex);
@@ -38,9 +38,9 @@ const rotateArray = (nums: MyArray<number>, k: number) => {
     console.log('Reverse first sub array', printVisualRepresentation(nums, 0, pivotIndex));
 
     // Reverse rest of elements [p,...,S)
-    reverseArray(nums, pivotIndex, nums.getSize())
+    reverseArray(nums, pivotIndex, nums.getLength())
 
-    console.log('Reverse second sub array', printVisualRepresentation(nums, pivotIndex, nums.getSize()));
+    console.log('Reverse second sub array', printVisualRepresentation(nums, pivotIndex, nums.getLength()));
     
 };
 

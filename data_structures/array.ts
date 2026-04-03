@@ -10,9 +10,17 @@ class MyArray<T> {
 
     private data: Record<number, T>;
 
-    constructor(enableLogs?: boolean) {
+    constructor(opts?: { initArray?: T[]; enableLogs?: boolean }) {
+        const { initArray, enableLogs } = opts ?? {};
+
         this.length = 0;
         this.data = {};
+
+        if (initArray) {
+            initArray.forEach(item => {
+                this.push(item);
+            })
+        }
         if (enableLogs) {
             console.log("List Initialized:");
             this.printVisualRepresentation();
@@ -78,7 +86,7 @@ class MyArray<T> {
     }
 
     /** Returns the number of elements in the array. */
-    getSize(): number {
+    getLength(): number {
         return this.length;
     }
 
@@ -100,10 +108,34 @@ class MyArray<T> {
         return undefined
     }
 
-    forEach(callback: (item?: T, i?: number) => void): void {
+    forEach(callback: (item: T, i?: number) => void): void {
         for (let i = 0 ; i < this.length; i++) {
             callback(this.data[i], i);
         }
+    }
+
+    slice(start: number, end: number): MyArray<T> {
+        const newArray = new MyArray<T>();
+
+        for (let i = start; i < end; i++) {
+            newArray.push(this.data[i]);
+        }
+        return newArray;
+    }
+
+    concat(array: MyArray<T>): MyArray<T> {
+        array.forEach(item => {
+            this.push(item);
+        })
+        return this;
+    }
+
+    clone(): MyArray<T> {
+        const newArray = new MyArray<T>();
+        this.forEach(item => {
+            newArray.push(item);
+        })
+        return newArray;
     }
 
     getVisualElements(): string[] {
@@ -125,7 +157,7 @@ executeMain('array.ts', () => {
         po: ([], arr) => arr.pop(),
         sh: ([index], arr) => arr.shiftLeft(Number(index)),
         d: ([index], arr) => arr.delete(Number(index)),
-    }, () => new MyArray(true))
+    }, () => new MyArray({ enableLogs: true }))
 });
 
 export default MyArray;

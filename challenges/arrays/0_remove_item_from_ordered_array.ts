@@ -1,5 +1,5 @@
 import { buildPointerRows } from "../../cli.js";
-import { MyArray } from "../../data_structures/array.js";
+import MyArray from "../../data_structures/array.js";
 
 /**
  * Removes duplicates from a sorted array in place and returns the count of unique elements.
@@ -16,7 +16,7 @@ const removeDuplicates = function(nums: MyArray<number>) {
 
     let j = 0; // last unique element
 
-    for (let i = 1; i < nums.getSize(); i++) {
+    for (let i = 1; i < nums.getLength(); i++) {
         printVisualRepresentation(nums, i, j);
         if (nums.get(j) < nums.get(i)) {
             nums.set(j+1, nums.get(i));
@@ -25,12 +25,12 @@ const removeDuplicates = function(nums: MyArray<number>) {
         printVisualRepresentation(nums, i, j);
     }
     
-    return nums.getSize() ? j+1 : 0;
+    return nums.getLength() ? j+1 : 0;
 };
 
 const printVisualRepresentation = (list: MyArray<number>, reading: number, lastWrite: number) => {
     const elements: string[] = [];
-    for (let k = 0; k < list.getSize(); k++) {
+    for (let k = 0; k < list.getLength(); k++) {
         elements.push(k > lastWrite && k < reading ? "X" : String(list.get(k)));
     }
     const pointers: Record<number, string> = {};
