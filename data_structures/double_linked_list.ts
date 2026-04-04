@@ -3,7 +3,8 @@ import { executeMain, runCLI, buildPointerRows } from "../cli.js";
 
 interface Node<T> {
     value: T | undefined;
-    next: Node<T> | null
+    next: Node<T> | null;
+    previous: Node<T> | null;
 } 
 
 class MyDoubleLinkedList<T> {
@@ -50,6 +51,7 @@ class MyDoubleLinkedList<T> {
             const newElement = {
                 value,
                 next: null,
+                previous: this.tail,
             }
             this.tail!.next = newElement; // tail has to be defined at this point because the array is not empty
             this.tail = newElement;
@@ -98,6 +100,7 @@ class MyDoubleLinkedList<T> {
             const newElement = {
                 value,
                 next: null,
+                previous: this.tail,
             }
             this.tail!.next = newElement; // tail has to be defined at this point because the array is not empty
             this.tail = newElement;
@@ -114,7 +117,7 @@ class MyDoubleLinkedList<T> {
         const nextElement = previousElement.next;
 
         /** The new node that will be placed at i */
-        const newNode = { value, next: nextElement };
+        const newNode = { value, next: nextElement, previous: previousElement };
 
         // Update the links
         previousElement.next = newNode;
@@ -141,8 +144,10 @@ class MyDoubleLinkedList<T> {
 
         const nextNode = previousNode.next!.next; // index is at most this.length - 1 so previousNode.next has to be defined
 
-        previousNode.next = nextNode;
+        if (nextNode) nextNode.previous = previousNode;
 
+        previousNode.next = nextNode;
+        
         // If the last element is deleted, the tail should be updated
         if (index === this.length-1) this.tail = previousNode;
 
@@ -158,25 +163,43 @@ class MyDoubleLinkedList<T> {
 
         if (index === 0) return this.head;
 
+        if (index === this.length - 1) return this.tail;
+
         if (index > this.length - 1) return null;
 
-        /** iteration reference of the node at position i*/ 
-        let node: Node<T> | null = this.head;
+        if (index < this.length / 2) {
+            /** iteration reference of the node at position i*/ 
+            let node: Node<T> | null = this.head;
 
-        // Move through the linked list until node references index
-        for(let i = 0; i < index; i++) {
-            node = node!.next; // index is at most this.length so node is always defined
-            if (this.enableLogs) this.printVisualRepresentation({ [i]: 'lookup' });
+            // Move through the linked list until node references index
+            for(let i = 0; i < index; i++) {
+                node = node!.next; // index is at most this.length so node is always defined
+                if (this.enableLogs) this.printVisualRepresentation({ [i]: 'lookup' });
+            }
+
+            if (this.enableLogs) this.printVisualRepresentation({ [index]: 'lookup' });
+
+            return node;
+        } else {
+            /** iteration reference of the node at position i*/ 
+            let node: Node<T> | null = this.tail;
+
+            // Move through the linked list until node references index
+            for(let i = this.length - 1; i > 0; i--) {
+                node = node!.previous; // index is at least 1 so node is always defined
+                if (this.enableLogs) this.printVisualRepresentation({ [i]: 'lookup' });
+            }
+
+            if (this.enableLogs) this.printVisualRepresentation({ [index]: 'lookup' });
+
+            return node;
+
         }
-
-        if (this.enableLogs) this.printVisualRepresentation({ [index]: 'lookup' });
-
-        return node;
     }
 
     push(item: T | undefined) {
 
-        const newNode = { value: item, next: null }
+        const newNode = { value: item, next: null, previous: this.tail }
 
         if (!this.length) {
             this.tail = newNode;
@@ -191,7 +214,7 @@ class MyDoubleLinkedList<T> {
     }
 
     prepend(item: T) {
-        const newNode = { value: item, next: this.head }
+        const newNode = { value: item, next: this.head, previous: null }
         this.head = newNode;
         // If the list was empty, then the tail should be updated to the new and only node
         if (this.length === 0) this.tail = newNode
@@ -212,7 +235,7 @@ class MyDoubleLinkedList<T> {
             return;
         }
 
-        const newLastElement = this.getNodeAtIndex(this.length - 2)!;
+        const newLastElement = this.tail!.previous!; // at this point tail has to be defined and its predecesor as well
         newLastElement.next = null;
         this.tail = newLastElement;
         this.length--;
@@ -246,6 +269,7 @@ class MyDoubleLinkedList<T> {
         this.tail!.next = {
             value: this.tail!.value,
             next: null,
+            previous: this.tail,
         }
 
 
