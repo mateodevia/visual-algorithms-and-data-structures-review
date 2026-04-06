@@ -1,7 +1,7 @@
 
 import { runCLI, buildPointerRows } from "../cli.js";
 
-class Queue {
+class MyStaticQueue {
     constructor(private size: number) {
         this.items = new Array(size).fill(undefined);
         console.log("Queue Initialized:");
@@ -63,11 +63,14 @@ class Queue {
         this.logicalFront++;
     }
 
-    printVisualRepresentation(): string {
+    printVisualRepresentation(): void {
         const visual = this.items.map(item => item === undefined ? "_" : String(item));
         const line = `[ ${visual.join(", ")} ]`;
 
-        if (this.logicalFront === this.logicalRear) return line;
+        if (this.logicalFront === this.logicalRear) {
+            console.log(line);
+            return;
+        }
 
         const f = (this.logicalFront + 1) % this.size;
         const r = this.logicalRear % this.size;
@@ -76,13 +79,13 @@ class Queue {
         if (f === r) pointers[f] = "F=R";
         else { pointers[f] = "F"; pointers[r] = "R"; }
 
-        return `${line}\n${buildPointerRows(visual, pointers)}`;
+        console.log(`${line}\n${buildPointerRows(visual, pointers)}`);
     }
 }
 
 
 function main() {
-    const queue = new Queue(5)
+    const queue = new MyStaticQueue(5)
     return queue;
 }
 
