@@ -275,6 +275,30 @@ class MyDoubleLinkedList<T> {
 
     }
 
+    reverse() {
+        if (this.length <= 1) return this;
+
+        /** Reference to iterate over the array, after the loop it will end up being the tail */
+        let current = this.head!; // At this point head is defined
+
+        while(current.next !== null) {
+            const temp = current.next!;
+
+            // Invert the reference of each node
+            current.next = current.previous;
+            current.previous = temp;
+            current = temp;
+        }
+        // Update tail references
+        current.next = current.previous;
+        current.previous = null;
+        
+
+        // Update head and tail references
+        this.head = this.tail;
+        this.tail = current;
+    }
+
     getVisualElements(): string[] {
         const visualElements: string[] = [];
         let currentNode: Node<T> | null = this.head;
@@ -307,7 +331,7 @@ class MyDoubleLinkedList<T> {
             pointers[i] = pointers[i] ? `${pointers[i]}/${label}` : label;
         }
 
-        const between = " --> ";
+        const between = " <-> ";
         const line = `[ ${nodeElements.join(between)} ]`;
         console.log(line);
         console.log(buildPointerRows(nodeElements, pointers, { between }));
@@ -323,6 +347,7 @@ executeMain('linked_list.ts', () => {
         po: ([], arr) => arr.pop(),
         sh: ([index], arr) => arr.shiftLeft(Number(index)),
         d: ([index], arr) => arr.delete(Number(index)),
+        r: ([], arr) => arr.reverse(),
     }, () => new MyDoubleLinkedList(true))
 });
 
