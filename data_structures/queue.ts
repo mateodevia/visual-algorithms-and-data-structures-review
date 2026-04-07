@@ -1,95 +1,140 @@
 
 import { runCLI, buildPointerRows } from "../cli.js";
 
-class MyStaticQueue {
-    constructor(private size: number) {
-        this.items = new Array(size).fill(undefined);
-        console.log("Queue Initialized:");
-        this.printVisualRepresentation();
+interface Node<T> {
+    value: T | undefined;
+    next: Node<T> | null
+} 
+
+class MyQueue<T> {
+    private first: Node<T> | null;
+
+    private last: Node<T> | null;
+
+    private length: number;
+
+    private enableLogs: boolean;
+
+    constructor(enableLogs?: boolean) {
+        this.first = null;
+        this.last = null;
+
+        this.length = 0;
+
+        this.enableLogs = !!enableLogs;
+        if (this.enableLogs) {
+            console.log('Initialized queue:');
+            this.printVisualRepresentation()
+        }
     }
 
-    private items: (number | undefined)[] = [];
-    /**
-     * The `front` property points to the logical index where the first element is located in the queue.
-     *
-     * Example:
-     * [ 5, 7, _, _, _, _, _]
-     *   ^
-     *   F
-     */
-    private logicalFront = -1;
-    /**
-     * The `rear` property points to the logical index where the last element is located in the queue.
-     *
-     * Example:
-     * [ 5, 7, _, _, _, _, _]
-     *      ^
-     *      R
-     */
-    private logicalRear = -1;
-
-    /**
-     * Adds a value to the rear of the queue.
-     *
-     * Time complexity:  O(1) — advances the rear pointer and writes one slot
-     * Space complexity: O(1)
-     *
-     * @param value - The number to add.
-     */
-    enqueue(value: number) {
-        // if the the distance between the rear and front pointers is equal to the size of the queue, the queue is full
-        if (Math.abs(this.logicalRear - this.logicalFront) === this.size) {
-            console.error("Queue is full");
-            return;
+    enqueue(value: T) {
+        const newNode = {
+            value,
+            next: this.last,
         }
 
-        // Add the value to the rear index
-        this.logicalRear++;
-        this.items[this.logicalRear % this.size] = value;
+        this.last = newNode;
+        this.length++;
     }
-
-    /**
-     * Removes the value at the front of the queue.
-     *
-     * Time complexity:  O(1) — advances the front pointer, no data is moved
-     * Space complexity: O(1)
-     */
+    
     dequeue() {
-        if (this.logicalRear === this.logicalFront) {
-            console.error("Queue is empty");
+        if (this.length === 0) {
+            console.error('The queue is empty');
             return;
         }
-        // Move the front pointer to the next element
-        this.logicalFront++;
+
+        if (this.length === 1) {
+            this.first = null;
+            this.last = null;
+            this.length --;
+            return;
+        }
+
+        const second = this.getNodeAtIndex(this.length - 2)!;
+        second.next = null;
+
+        this.first = second
+        this.length --;
     }
 
-    printVisualRepresentation(): void {
-        const visual = this.items.map(item => item === undefined ? "_" : String(item));
-        const line = `[ ${visual.join(", ")} ]`;
+    peek() {
+        return this.first;
+    }
 
-        if (this.logicalFront === this.logicalRear) {
-            console.log(line);
-            return;
+    getNodeAtIndex(index: number): Node<T> | null {
+
+        if (index < 0) {
+            console.error('Invalid Index');
+            return null;
         }
 
-        const f = (this.logicalFront + 1) % this.size;
-        const r = this.logicalRear % this.size;
+        if (index === 0) return this.last;
+
+        if (index > this.length - 1) return null;
+
+        /** iteration reference of the node at position i*/ 
+        let node: Node<T> | null = this.last;
+
+        // Move through the linked list until node references index
+        for(let i = 0; i < index; i++) {
+            node = node!.next; // index is at most this.length so node is always defined
+            // if (this.enableLogs) this.printVisualRepresentation({ [i]: 'lookup' });
+        }
+
+        // if (this.enableLogs) this.printVisualRepresentation({ [index]: 'lookup' });
+
+        return node;
+    }
+
+    /**
+     * Walks from `last` (newest) along `next` to build values, then reverses to
+     * queue order: front (oldest) → rear (newest).
+     */
+    getVisualElements(): string[] {
+        const newestToOldest: string[] = [];
+        let currentNode: Node<T> | null = this.last;
+
+        while (currentNode !== null) {
+            newestToOldest.push(String(currentNode.value));
+            currentNode = currentNode.next;
+        }
+
+        const visualElements = newestToOldest.reverse();
+        visualElements.push("null");
+        return visualElements;
+    }
+
+    printVisualRepresentation(extraPointers: Record<number, string> = {}) {
+        const elements = this.getVisualElements();
+        const nodeElements = elements.slice(0, Math.max(0, elements.length - 1));
+        const visualLength = nodeElements.length;
 
         const pointers: Record<number, string> = {};
-        if (f === r) pointers[f] = "F=R";
-        else { pointers[f] = "F"; pointers[r] = "R"; }
+        if (visualLength === 1) {
+            pointers[0] = "f/l";
+        } else if (visualLength > 1) {
+            pointers[0] = "f";
+            pointers[visualLength - 1] = "l";
+        }
 
-        console.log(`${line}\n${buildPointerRows(visual, pointers)}`);
+        for (const [index, label] of Object.entries(extraPointers)) {
+            const i = Number(index);
+            pointers[i] = pointers[i] ? `${pointers[i]}/${label}` : label;
+        }
+
+        const between = " --> ";
+        const line = `[ ${nodeElements.join(between)} ]`;
+        console.log(line);
+        console.log(buildPointerRows(nodeElements, pointers, { between }));
     }
 }
 
-
-function main() {
-    const queue = new MyStaticQueue(5)
-    return queue;
-}
 
 runCLI({
     e: ([value], q) => q.enqueue(Number(value)),
     d: (_, q) => q.dequeue(),
-}, main);
+}, () => {
+    const queue = new MyQueue(true)
+    return queue;
+});

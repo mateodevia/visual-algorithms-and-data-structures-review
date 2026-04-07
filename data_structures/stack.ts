@@ -20,7 +20,7 @@ class MyStack<T> {
         this.length = 0;
 
         this.enableLogs = enableLogs ?? false;
-        if (enableLogs) {
+        if (this.enableLogs) {
             console.log('Initialized stack:');
             this.printVisualRepresentation()
         }
