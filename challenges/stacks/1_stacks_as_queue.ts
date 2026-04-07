@@ -6,7 +6,6 @@ class ChallengeStack<T> {
 
     private mainStack: MyStack<T>;
 
-    /** Mirror of the temporary aux stack for CLI diagrams (same ops as `aux` in `fillAuxStack`). */
     private auxiliaryStack: MyStack<T>;
 
     private enableLogs: boolean;
@@ -35,46 +34,38 @@ class ChallengeStack<T> {
             console.error('Queue is empty');
             return;
         }
+
+        if (this.auxiliaryStack.getLength()) {
+            const response = this.auxiliaryStack.pop();
+            this.length--;
+            return response;
+        }
+
         this.fillAuxStack();
 
-        const response = this.auxiliaryStack.pop();
-
-        console.log('--------------------')
-        console.log('Popping:', response);
-        console.log('--------------------')
-
         this.length--;
-
-        this.fillMainQueue();
-
-        return response;
+        return this.auxiliaryStack.pop();
     }
 
     peek () {
+        if (this.length === 0) {
+            console.info('Queue is empty');
+            return;
+        }
+
+        if (this.auxiliaryStack.getLength()) {
+            return this.auxiliaryStack.peek();
+        }
+
         this.fillAuxStack();
 
-        const response = this.auxiliaryStack.peek();
-
-        console.log('--------------------')
-        console.log('Peeking:', response);
-        console.log('--------------------')
-
-        this.fillMainQueue();
-
-        return response;
+        return this.auxiliaryStack.peek();
     }
 
     fillAuxStack () {
         for(let i = 0; i < this.length; i++) {
             this.auxiliaryStack.push(this.mainStack.pop()!);
-            this.printStackBlock("Filling aux", this.auxiliaryStack);
-        }
-    }
-
-    fillMainQueue () {
-        for(let i = 0; i < this.length; i++) {
-            this.mainStack.push(this.auxiliaryStack.pop()!);
-            this.printStackBlock("Filling main", this.mainStack);
+            if (this.enableLogs) this.printStackBlock("Filling aux", this.auxiliaryStack);
         }
     }
 
@@ -86,7 +77,8 @@ class ChallengeStack<T> {
 
     printVisualRepresentation(extraPointers: Record<number, string> = {}) {
         console.log("");
-        this.printStackBlock("MAIN (queue storage / primary stack)", this.mainStack, extraPointers);
+        this.printStackBlock("MAIN STACK", this.mainStack, extraPointers);
+        this.printStackBlock("AUX STACK", this.auxiliaryStack, extraPointers);
     }
 
     /**

@@ -60,6 +60,10 @@ class MyStack<T> {
         return this.top?.value;
     }
 
+    getLength () {
+        return this.length;
+    }
+
     getVisualElements(): string[] {
         const visualElements: string[] = [];
         let currentNode: Node<T> | null = this.top;
