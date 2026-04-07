@@ -138,3 +138,5 @@ runCLI({
     const queue = new MyQueue(true)
     return queue;
 });
+
+export default MyQueue;

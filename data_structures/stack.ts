@@ -45,13 +45,15 @@ class MyStack<T> {
         this.length++;
     }
 
-    pop() {
+    pop(): T | undefined {
         if (this.length === 0) {
             console.error('The stack is empty');
             return;
         }
+        const response = this.top!
         this.top = this.top!.next;
         this.length --;
+        return response.value;
     }
 
     peek () {
