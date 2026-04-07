@@ -3,8 +3,12 @@ import { executeMain, runCLI, buildPointerRows } from "../cli.js";
 interface Node<T> {
     value: T | undefined;
     next: Node<T> | null
-} 
+}
 
+/**
+ * A singly linked stack with pointers to the top (and bottom for visualization).
+ * Core operations are O(1); walking the chain for visuals is O(n).
+ */
 class MyStack<T> {
     private top: Node<T> | null;
 
@@ -14,6 +18,9 @@ class MyStack<T> {
 
     private enableLogs: boolean;
 
+    /**
+     * @param enableLogs - When true, logs an initial empty visualization.
+     */
     constructor(enableLogs?: boolean) {
         this.top = null;
         this.bottom = null;
@@ -25,7 +32,15 @@ class MyStack<T> {
             this.printVisualRepresentation()
         }
     }
-    
+
+    /**
+     * Pushes a value onto the top of the stack.
+     *
+     * Time complexity:  O(1) — updates `top` and optionally `bottom`
+     * Space complexity: O(1) — one new node
+     *
+     * @param value - Element to push.
+     */
     push(value: T) {
         if (this.length === 0) {
             this.top = {
@@ -45,6 +60,12 @@ class MyStack<T> {
         this.length++;
     }
 
+    /**
+     * Removes and returns the top element.
+     *
+     * Time complexity:  O(1) — relinks `top`
+     * Space complexity: O(1)
+     */
     pop(): T | undefined {
         if (this.length === 0) {
             console.error('The stack is empty');
@@ -56,14 +77,32 @@ class MyStack<T> {
         return response.value;
     }
 
+    /**
+     * Returns the top value without removing it.
+     *
+     * Time complexity:  O(1)
+     * Space complexity: O(1)
+     */
     peek () {
         return this.top?.value;
     }
 
+    /**
+     * Returns the number of elements.
+     *
+     * Time complexity:  O(1)
+     * Space complexity: O(1)
+     */
     getLength () {
         return this.length;
     }
 
+    /**
+     * Collects node values from top to bottom, plus a trailing `"null"` sentinel.
+     *
+     * Time complexity:  O(n) — walks the whole list
+     * Space complexity: O(n) — output array
+     */
     getVisualElements(): string[] {
         const visualElements: string[] = [];
         let currentNode: Node<T> | null = this.top;
@@ -77,6 +116,14 @@ class MyStack<T> {
         return visualElements;
     }
 
+    /**
+     * Prints a bracket diagram and pointer labels (e.g. top/bottom).
+     *
+     * Time complexity:  O(n) — uses {@link MyStack.getVisualElements}
+     * Space complexity: O(n) — console output proportional to n
+     *
+     * @param extraPointers - Optional index → label for extra markers on nodes.
+     */
     printVisualRepresentation(extraPointers: Record<number, string> = {}) {
         const elements = this.getVisualElements();
         const nodeElements = elements.slice(0, Math.max(0, elements.length - 1));

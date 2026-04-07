@@ -1,7 +1,11 @@
 import { executeMain, runCLI, buildPointerRows } from "../../cli.js";
 import MyStack from '../../data_structures/stack.js'
 
-
+/**
+ * Queue behavior using two stacks: incoming pushes go to `mainStack`; dequeue/peek
+ * drain into `auxiliaryStack` when needed. Enqueue is O(1); dequeue is amortized O(1),
+ * worst case O(n) when the main stack must be reversed into the auxiliary stack.
+ */
 class ChallengeStack<T> {
 
     private mainStack: MyStack<T>;
@@ -12,6 +16,9 @@ class ChallengeStack<T> {
 
     private length: number;
 
+    /**
+     * @param enableLogs - When true, logs initial state and optional steps while filling aux.
+     */
     constructor(enableLogs?: boolean) {
         this.mainStack = new MyStack(false);
         this.auxiliaryStack = new MyStack(false);
@@ -23,12 +30,28 @@ class ChallengeStack<T> {
             this.printVisualRepresentation()
         }
     }
-    
+
+    /**
+     * Enqueues by pushing onto the main stack.
+     *
+     * Time complexity:  O(1) — one stack push
+     * Space complexity: O(1) — aside from the stored element
+     *
+     * @param value - Element to enqueue.
+     */
     enqueue(value: T) {
         this.mainStack.push(value);
         this.length++;
     }
 
+    /**
+     * Dequeues from the auxiliary stack when non-empty; otherwise transfers the main stack into it.
+     *
+     * Time complexity:
+     *   - Amortized: O(1) — occasional O(n) reversal of the main stack
+     *   - Worst case:  O(n) — when `fillAuxStack` runs
+     * Space complexity: O(1) — aside from the two stacks holding elements
+     */
     dequeue() {
         if (this.length === 0) {
             console.error('Queue is empty');
@@ -47,6 +70,14 @@ class ChallengeStack<T> {
         return this.auxiliaryStack.pop();
     }
 
+    /**
+     * Returns the front value without removing it (uses auxiliary stack or fills it first).
+     *
+     * Time complexity:
+     *   - Amortized: O(1)
+     *   - Worst case:  O(n) — when `fillAuxStack` runs
+     * Space complexity: O(1)
+     */
     peek () {
         if (this.length === 0) {
             console.info('Queue is empty');
@@ -62,6 +93,12 @@ class ChallengeStack<T> {
         return this.auxiliaryStack.peek();
     }
 
+    /**
+     * Pops every element from `mainStack` and pushes it onto `auxiliaryStack` (reverses order).
+     *
+     * Time complexity:  O(n) — one pop and one push per element currently in main
+     * Space complexity: O(1) — reuses existing nodes via stack operations
+     */
     fillAuxStack () {
         for(let i = 0; i < this.length; i++) {
             this.auxiliaryStack.push(this.mainStack.pop()!);
@@ -69,12 +106,26 @@ class ChallengeStack<T> {
         }
     }
 
+    /**
+     * Concatenates MAIN and AUX stack visual strings (see {@link MyStack.getVisualElements}).
+     *
+     * Time complexity:  O(n) — linear in total elements across both stacks
+     * Space complexity: O(n) — output array
+     */
     getVisualElements(): string[] {
         const main = this.mainStack.getVisualElements();
         const aux = this.auxiliaryStack.getVisualElements();
         return ["MAIN", ...main, "AUX", ...aux];
     }
 
+    /**
+     * Prints both stack diagrams.
+     *
+     * Time complexity:  O(n) — proportional to elements in both stacks
+     * Space complexity: O(n) — console output
+     *
+     * @param extraPointers - Passed through to each stack block’s pointer labels.
+     */
     printVisualRepresentation(extraPointers: Record<number, string> = {}) {
         console.log("");
         this.printStackBlock("MAIN STACK", this.mainStack, extraPointers);
@@ -83,6 +134,13 @@ class ChallengeStack<T> {
 
     /**
      * Same layout as {@link MyStack.printVisualRepresentation} so diagrams match the stack lesson.
+     *
+     * Time complexity:  O(n) for that stack’s size
+     * Space complexity: O(n) — console output
+     *
+     * @param title - Section heading printed above the diagram.
+     * @param stack - Stack to render.
+     * @param extraPointers - Optional index → label for extra markers on nodes.
      */
     private printStackBlock(
         title: string,

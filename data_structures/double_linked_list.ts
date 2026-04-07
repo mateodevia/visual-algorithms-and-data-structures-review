@@ -5,8 +5,12 @@ interface Node<T> {
     value: T | undefined;
     next: Node<T> | null;
     previous: Node<T> | null;
-} 
+}
 
+/**
+ * Doubly linked list with `head`/`tail` and bidirectional links.
+ * Index access walks from the nearer end when possible; worst-case random access remains O(n).
+ */
 class MyDoubleLinkedList<T> {
     private head: Node<T> | null;
 
@@ -16,6 +20,9 @@ class MyDoubleLinkedList<T> {
 
     private enableLogs: boolean;
 
+    /**
+     * @param enableLogs - When true, logs an initial empty visualization.
+     */
     constructor(enableLogs?: boolean) {
         this.head = null;
         this.tail = null;
@@ -28,6 +35,15 @@ class MyDoubleLinkedList<T> {
         }
     }
 
+    /**
+     * Writes `value` at `index`, optionally extending the list with `undefined` nodes.
+     *
+     * Time complexity:  O(n) — may walk with {@link MyDoubleLinkedList.getNodeAtIndex} and/or extend with repeated {@link MyDoubleLinkedList.push}
+     * Space complexity: O(1) extra — aside from new nodes stored in the list
+     *
+     * @param index - Logical index to set.
+     * @param value - Value to store.
+     */
     set(index: number, value: T) {
 
         if (index < 0) {
@@ -69,12 +85,29 @@ class MyDoubleLinkedList<T> {
         if (this.enableLogs) this.printVisualRepresentation({ [index]: 'updated' });
     }
 
+    /**
+     * Returns the value at `index`, or `undefined` if missing.
+     *
+     * Time complexity:  O(n) — {@link MyDoubleLinkedList.getNodeAtIndex}
+     * Space complexity: O(1)
+     *
+     * @param index - Logical index to read.
+     */
     get(index: number) {
         const node = this.getNodeAtIndex(index)
 
         return node?.value;
     }
 
+    /**
+     * Inserts `value` before the current node at `index`, or extends the list if `index` is past the end.
+     *
+     * Time complexity:  O(n) — traversal and/or gap filling
+     * Space complexity: O(1) extra — aside from the new node
+     *
+     * @param index - Insert position (0 = prepend).
+     * @param value - Value to insert.
+     */
     insert(index: number, value: T) {
 
         if(!this.length) return;
@@ -126,6 +159,14 @@ class MyDoubleLinkedList<T> {
         if (this.enableLogs) this.printVisualRepresentation({ [index]: 'new' });
     }
 
+    /**
+     * Removes the node at `index` and repairs `previous`/`next` links where applicable.
+     *
+     * Time complexity:  O(n) — uses {@link MyDoubleLinkedList.getNodeAtIndex} when index > 0
+     * Space complexity: O(1)
+     *
+     * @param index - Index of the node to remove.
+     */
     delete(index: number) {
 
         if (index < 0 || index > this.length - 1) {
@@ -154,6 +195,14 @@ class MyDoubleLinkedList<T> {
         this.length--;
     }
 
+    /**
+     * Returns the node at `index`, using `head`/`tail` for endpoints and walking from the nearer side for interior indices.
+     *
+     * Time complexity:  O(n) — linear walk along `next` or `previous` in the worst case
+     * Space complexity: O(1)
+     *
+     * @param index - Zero-based index from the head.
+     */
     getNodeAtIndex(index: number): Node<T> | null {
 
         if (index < 0) {
@@ -197,6 +246,14 @@ class MyDoubleLinkedList<T> {
         }
     }
 
+    /**
+     * Appends a node after the current tail (or initializes the list).
+     *
+     * Time complexity:  O(1) — updates `tail` and one link
+     * Space complexity: O(1) — one new node
+     *
+     * @param item - Value to append (may be `undefined` for sparse gaps).
+     */
     push(item: T | undefined) {
 
         const newNode = { value: item, next: null, previous: this.tail }
@@ -213,6 +270,14 @@ class MyDoubleLinkedList<T> {
         this.length++;
     }
 
+    /**
+     * Inserts a new head node.
+     *
+     * Time complexity:  O(1)
+     * Space complexity: O(1) — one new node
+     *
+     * @param item - Value to prepend.
+     */
     prepend(item: T) {
         const newNode = { value: item, next: this.head, previous: null }
         this.head = newNode;
@@ -221,6 +286,12 @@ class MyDoubleLinkedList<T> {
         this.length++;
     }
 
+    /**
+     * Removes the tail using `tail.previous`.
+     *
+     * Time complexity:  O(1) — constant-time relink from the tail pointer
+     * Space complexity: O(1)
+     */
     pop() {
 
         if (this.length === 0) {
@@ -241,6 +312,14 @@ class MyDoubleLinkedList<T> {
         this.length--;
     }
 
+    /**
+     * Removes the node at `index` and appends a copy of the old tail at the end (experimental helper).
+     *
+     * Time complexity:  O(n) — {@link MyDoubleLinkedList.getNodeAtIndex} plus constant-time relinking
+     * Space complexity: O(1) extra — one new tail node
+     *
+     * @param index - Index of the node to remove from the chain.
+     */
     shiftLeft(index: number) {
 
         if (this.length === 1) {
@@ -275,6 +354,12 @@ class MyDoubleLinkedList<T> {
 
     }
 
+    /**
+     * Reverses all `next`/`previous` pointers in place and swaps `head`/`tail`.
+     *
+     * Time complexity:  O(n) — one pass over the list
+     * Space complexity: O(1) — only pointer updates
+     */
     reverse() {
         if (this.length <= 1) return this;
 
@@ -299,6 +384,12 @@ class MyDoubleLinkedList<T> {
         this.tail = current;
     }
 
+    /**
+     * Collects values from head to tail, plus a trailing `"null"` sentinel.
+     *
+     * Time complexity:  O(n) — single pass along `next`
+     * Space complexity: O(n) — output array
+     */
     getVisualElements(): string[] {
         const visualElements: string[] = [];
         let currentNode: Node<T> | null = this.head;
@@ -313,6 +404,14 @@ class MyDoubleLinkedList<T> {
         return visualElements;
     }
 
+    /**
+     * Prints a doubly linked diagram with head/tail labels.
+     *
+     * Time complexity:  O(n) — uses {@link MyDoubleLinkedList.getVisualElements}
+     * Space complexity: O(n) — console output
+     *
+     * @param extraPointers - Optional index → label for extra markers on nodes.
+     */
     printVisualRepresentation(extraPointers: Record<number, string> = {}) {
         const elements = this.getVisualElements(); // node values + "null"
         const nodeElements = elements.slice(0, Math.max(0, elements.length - 1)); // exclude sentinel
