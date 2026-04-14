@@ -79,7 +79,7 @@ class MyAdjacentListGraph {
     }
 }
 
-executeMain("graph.ts", () => {
+executeMain("adjacent_list_graph.ts", () => {
     runCLI(
         {
             v: ([value], graph) => graph.addVertex(Number(value)),
