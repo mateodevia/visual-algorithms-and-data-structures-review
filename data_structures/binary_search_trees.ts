@@ -289,19 +289,7 @@ executeMain("binary_search_trees.ts", () => {
             l: ([value], tree) => console.log('Found:', tree.lookup(Number(value)).found?.value),
             r: ([value], tree) => tree.remove(Number(value)),
         },
-        () => {
-            const t = new MyBinarySearchTree<number>(true)
-            t.insert(5);
-            t.insert(10);
-            t.insert(4);
-            t.insert(6);
-            t.insert(7);
-            t.insert(8);
-            t.insert(12);
-            t.insert(11);
-            t.printVisualRepresentation()
-            return t
-        },
+        () => new MyBinarySearchTree<number>(true),
     );
 });
 
