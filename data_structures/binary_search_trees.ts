@@ -1,9 +1,9 @@
 import {
     executeMain,
     runCLI,
-    buildPointerRows,
     collectBinaryTreeLevels,
     formatBinaryTreeAsciiLines,
+    type BinaryTreeNodeLike,
 } from "../cli.js";
 
 
@@ -14,6 +14,16 @@ interface Node<T> {
 }
 
 class MyBinarySearchTree<T> {
+    /** Short tags in the tree → plain-language meaning (only tags used in a step are printed). */
+    private static readonly REMOVAL_MARK_LEGENDS: Readonly<Record<string, string>> = {
+        x: "node to remove (lookup hit)",
+        P: "parent of x (the link you will rewrite: parent.left or parent.right)",
+        l: "subtree that replaces x when x has no right child (x.left, may be null)",
+        r: "x.right — first node in the right subtree (step toward the successor)",
+        S: "successor = smallest element in x’s right subtree (walk right from x, then left as far as possible)",
+        Ps: "parent of S",
+    };
+
     private root: Node<T> | null;
 
     private enableLogs: boolean;
@@ -99,12 +109,73 @@ class MyBinarySearchTree<T> {
 
     }
 
+    /**
+     * Builds {@link formatBinaryTreeAsciiLines} `nodeSuffix` so labels appear inside each node cell.
+     */
+    private marksToSuffixFn(
+        marks: ReadonlyArray<{ label: string; node: Node<T> | null | undefined }>,
+    ): (node: BinaryTreeNodeLike<T>) => string | undefined {
+        const map = new Map<Node<T>, string>();
+        for (const { label, node } of marks) {
+            if (node == null) continue;
+            const prev = map.get(node);
+            map.set(node, prev ? `${prev}·${label}` : `·${label}`);
+        }
+        return (n) => map.get(n as Node<T>);
+    }
+
+    /** Prints explanations for mark tags present in this step (order = first use in `marks`). */
+    private printRemovalMarkLegend(
+        marks: ReadonlyArray<{ label: string; node: Node<T> | null | undefined }>,
+    ) {
+        const ordered: string[] = [];
+        const seen = new Set<string>();
+        for (const { label } of marks) {
+            if (seen.has(label)) continue;
+            seen.add(label);
+            ordered.push(label);
+        }
+        if (ordered.length === 0) return;
+
+        const colW = Math.max(...ordered.map((l) => l.length));
+        console.log("");
+        console.log("Mark legend:");
+        for (const label of ordered) {
+            const desc =
+                MyBinarySearchTree.REMOVAL_MARK_LEGENDS[label] ??
+                "(add this tag to REMOVAL_MARK_LEGENDS)";
+            console.log(`  ${label.padEnd(colW)}  ${desc}`);
+        }
+    }
+
+    private logRemovalStep(
+        step: string,
+        marks: ReadonlyArray<{ label: string; node: Node<T> | null | undefined }>,
+    ) {
+        if (!this.enableLogs) return;
+        console.log("");
+        console.log(`[remove] ${step}`);
+        if (!this.root) {
+            console.log("(empty tree)");
+            return;
+        }
+        this.printVisualRepresentation(marks);
+    }
+
     remove (value: T) {
         const { found: nodeToRemove, parentInfo } = this.lookup(value);
 
         const { parent, relation } = parentInfo;
 
-        if (!nodeToRemove) return;
+        if (!nodeToRemove) {
+            this.logRemovalStep(`value ${String(value)} not found`, []);
+            return;
+        }
+
+        this.logRemovalStep("after lookup", [
+            { label: "x", node: nodeToRemove },
+            { label: "P", node: parent },
+        ]);
 
         const next = nodeToRemove.right;
 
@@ -120,6 +191,12 @@ class MyBinarySearchTree<T> {
             //        |
             //       (l)   (parent points to nodeToRemove.left)
             
+            this.logRemovalStep("branch: no right child → splice left subtree (or null)", [
+                { label: "x", node: nodeToRemove },
+                { label: "P", node: parent },
+                { label: "l", node: nodeToRemove.left },
+            ]);
+
             // If there is no parent it meands we are removing the root
             if (!parent || !relation) {
                 this.root = nodeToRemove.left;
@@ -164,6 +241,17 @@ class MyBinarySearchTree<T> {
                 lastLeftParent= lastLeft;
                 lastLeft = lastLeft?.left;
             }
+
+            this.logRemovalStep(
+                "branch: successor = leftmost in right subtree; detach preserves succ.right",
+                [
+                    { label: "x", node: nodeToRemove },
+                    { label: "P", node: parent },
+                    { label: "r", node: next },
+                    { label: "S", node: lastLeft },
+                    { label: "Ps", node: lastLeftParent },
+                ],
+            );
             
             // If there is no parent it meands we are removing the root
             if (!parent || !relation) {
@@ -183,6 +271,11 @@ class MyBinarySearchTree<T> {
 
             
         } else if (next.right && !next.left) {
+            this.logRemovalStep("branch: R has no left but has right → promote R, hang old left on R", [
+                { label: "x", node: nodeToRemove },
+                { label: "P", node: parent },
+                { label: "r", node: next },
+            ]);
             //      (parent)
             //         |
             //         X
@@ -212,6 +305,11 @@ class MyBinarySearchTree<T> {
             parent[relation] = next;
             next.left = nodeToRemove.left
         } else {
+            this.logRemovalStep("branch: R is leaf → promote R, attach old left as R.left", [
+                { label: "x", node: nodeToRemove },
+                { label: "P", node: parent },
+                { label: "r", node: next },
+            ]);
             //      (parent)
             //         |
             //         X
@@ -241,7 +339,6 @@ class MyBinarySearchTree<T> {
 
     /**
      * Values in breadth-first order (level by level, left to right).
-     * Index `i` matches {@link MyBinarySearchTree.printVisualRepresentation} pointer keys.
      */
     getVisualElements(): string[] {
         return collectBinaryTreeLevels(this.root).bfsOrder;
@@ -249,35 +346,29 @@ class MyBinarySearchTree<T> {
 
     /**
      * Prints a centered ASCII tree (parent above children, `/` `\\` edges).
-     * Optional carets: BFS index → label (same order as {@link getVisualElements}),
-     * rendered on a companion line using {@link buildPointerRows}.
-     *
-     * @param extraPointers - Global BFS index → label for pointer row under the value line.
+     * Optional removal/debug marks: labels are drawn inside the node’s padded cell after the value
+     * (e.g. `10·rm` on the target and `5·P` on its parent), via {@link formatBinaryTreeAsciiLines} `nodeSuffix`.
+     * When `marks` is non-empty, a **Mark legend** block is printed under the tree.
      */
-    printVisualRepresentation(extraPointers: Record<number, string> = {}) {
+    printVisualRepresentation(
+        marks?: ReadonlyArray<{ label: string; node: Node<T> | null | undefined }>,
+    ) {
         if (!this.root) {
             console.log("(empty tree)");
             return;
         }
 
-        const lines = formatBinaryTreeAsciiLines(this.root);
+        const suffixFn =
+            marks && marks.length > 0 ? this.marksToSuffixFn(marks) : undefined;
+        const lines = formatBinaryTreeAsciiLines(this.root, suffixFn ? { nodeSuffix: suffixFn } : undefined);
         console.log("");
         console.log('-----------------------------------------------------')
         console.log("Tree:");
         for (const line of lines) {
             console.log(line);
         }
-
-        const bfs = collectBinaryTreeLevels(this.root).bfsOrder;
-        if (Object.keys(extraPointers).length > 0 && bfs.length > 0) {
-            const between = ", ";
-            const pointerBlock = buildPointerRows(bfs, extraPointers, { between });
-            if (pointerBlock.trim()) {
-                console.log("");
-                console.log(`Pointers (BFS order: [ ${bfs.join(between)} ]):`);
-                console.log(`[ ${bfs.join(between)} ]`);
-                console.log(pointerBlock);
-            }
+        if (marks && marks.length > 0) {
+            this.printRemovalMarkLegend(marks);
         }
     }
 }

@@ -199,6 +199,25 @@ function maxLabelLength<T>(
     return m;
 }
 
+/** Like {@link maxLabelLength}, but cell width accounts for {@link FormatBinaryTreeAsciiOptions.nodeSuffix}. */
+function maxCellTextLength<T>(
+    node: BinaryTreeNodeLike<T> | null,
+    path: Set<BinaryTreeNodeLike<T>>,
+    suffix?: (node: BinaryTreeNodeLike<T>) => string | undefined,
+): number {
+    if (!node) return 0;
+    if (path.has(node)) return formatCycleBackEdge(node).length;
+    path.add(node);
+    const selfLen = (String(node.value) + (suffix?.(node) ?? "")).length;
+    const m = Math.max(
+        selfLen,
+        node.left ? maxCellTextLength(node.left, path, suffix) : 0,
+        node.right ? maxCellTextLength(node.right, path, suffix) : 0,
+    );
+    path.delete(node);
+    return m;
+}
+
 /**
  * Horizontal center of the rendered value inside a padded `cell` (fractional index).
  * Aligns edges and parents to the digits, not to the middle of the padding box.
@@ -268,11 +287,17 @@ function edgeSingle(
     return arr.join("");
 }
 
-export interface FormatBinaryTreeAsciiOptions {
+export interface FormatBinaryTreeAsciiOptions<T = unknown> {
     /** Minimum width of each node cell (spaces pad shorter values). Default 5. */
     minCellWidth?: number;
     /** Gap between left and right subtree blocks. Default 2. */
     gap?: number;
+    /**
+     * Optional suffix appended to {@link BinaryTreeNodeLike.value} inside the same padded
+     * cell (e.g. `"10·rm"`). Keep labels short; long text is truncated by {@link padCell}.
+     * Edge centers still use the numeric/string value only via {@link labelCenterInCell}.
+     */
+    nodeSuffix?: (node: BinaryTreeNodeLike<T>) => string | undefined;
     /**
      * Staircase leading spaces per row (root most indented, lower rows shifted left).
      * - `undefined` (default): only for **path** trees (each node has ≤1 child), so
@@ -314,16 +339,21 @@ export function isBinaryPathTree<T>(
  */
 export function formatBinaryTreeAsciiLines<T>(
     root: BinaryTreeNodeLike<T> | null,
-    options?: FormatBinaryTreeAsciiOptions,
+    options?: FormatBinaryTreeAsciiOptions<T>,
 ): string[] {
     if (!root) return [];
 
     const gap = options?.gap ?? 2;
     const minCell = options?.minCellWidth ?? 5;
-    const cellW = Math.max(minCell, maxLabelLength(root, new Set()));
+    const suffixFn = options?.nodeSuffix;
+    const cellW = Math.max(
+        minCell,
+        suffixFn ? maxCellTextLength(root, new Set(), suffixFn) : maxLabelLength(root, new Set()),
+    );
 
     function cellFor(node: BinaryTreeNodeLike<T>): string {
-        return padCell(String(node.value), cellW);
+        const suf = suffixFn?.(node) ?? "";
+        return padCell(String(node.value) + suf, cellW);
     }
 
     function cycleLeaf(node: BinaryTreeNodeLike<T>): AsciiSubtree {
