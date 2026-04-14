@@ -1,5 +1,19 @@
 import * as readline from "readline";
 
+export {
+    buildColumnPointers,
+    buildSubstringPointers,
+    collectBinaryTreeLevels,
+    formatBinaryTreeAsciiLines,
+    indexOfSubstring,
+    isBinaryPathTree,
+    labelCenterInCell,
+    padCell,
+    type BinaryTreeNodeLike,
+    type ColumnPointer,
+    type FormatBinaryTreeAsciiOptions,
+} from "./visual_utils.js";
+
 /** Options for {@link buildPointerRows}; keep `between` in sync with the printed value line. */
 export interface BuildPointerRowsOptions {
     /**
