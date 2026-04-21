@@ -1,5 +1,5 @@
 import MyList from "../../data_structures/list.js";
-import { buildPointerRows } from "../../cli.js";
+import { buildPointerRows, executeMain } from "../../cli.js";
 
 const swap = (list: MyList<number>, i: number, j: number): void => {
     const temp = list.get(i);
@@ -20,15 +20,20 @@ const swap = (list: MyList<number>, i: number, j: number): void => {
  */
 export const bubbleSort = (list: MyList<number>, order: "asc" | "desc" = "asc") => {
 
-    console.log("--------------------------------");
+    console.log("----------------------------------------------------------------------------------------");
     console.log("BUBBLE SORT:");
     console.log("");
     console.log("✅ Means the item is already sorted");
+    console.log("");
+    console.log(`j will be compared with the the next item, if is ${order === 'asc' ? 'bigger' : 'smaller'}, it will be swaped`);
 
     for (let k = 0; k < list.getSize(); k++)
         if (list.get(k) === undefined) throw new Error("Cannot sort a list with undefined items");
 
     for (let i = 0; i < list.getSize() - 1; i++) {
+        console.log('')
+        console.log(`New outer loop i = ${i} ------------------------------------------------`)
+        console.log('')
         let swapped = false;
         for (let j = 0; j < list.getSize() - i - 1; j++) {
             printVisualRepresentation(list, i, j);
@@ -36,8 +41,9 @@ export const bubbleSort = (list: MyList<number>, order: "asc" | "desc" = "asc") 
                 ? list.get(j)! > list.get(j + 1)!
                 : list.get(j)! < list.get(j + 1)!;
             if (shouldSwap) {
-                console.log();
+                console.log('');
                 console.log(`Swapping ${list.get(j)} and ${list.get(j + 1)}:`);
+                console.log('');
                 swap(list, j, j + 1);
                 list.printVisualRepresentation();
                 swapped = true;
@@ -57,11 +63,12 @@ const printVisualRepresentation = (list: MyList<number>, i: number, j: number) =
     });
 
     const sortedStart = n - i;
+    const iPointerIndex = n - i - 1;
     const pointers: Record<number, string> = {};
     if (i < n) {
-        if (i === j) pointers[i] = "i=j";
+        if (iPointerIndex === j) pointers[iPointerIndex] = "i=j";
         else {
-            pointers[i] = "i";
+            pointers[iPointerIndex] = "n-i";
             pointers[j] = "j";
         }
     }
@@ -87,18 +94,17 @@ const printVisualRepresentation = (list: MyList<number>, i: number, j: number) =
     console.log(buildPointerRows(elements, pointers));
 };
 
-function main() {
+executeMain("bubble_sort.ts", () => {
     const list = new MyList<number>(5, true);
     list.set(0, Math.floor(Math.random() * 100));
     list.set(1, Math.floor(Math.random() * 100));
     list.set(2, Math.floor(Math.random() * 100));
     list.set(3, Math.floor(Math.random() * 100));
     list.set(4, Math.floor(Math.random() * 100));
-    console.log("--------------------------------");
+    console.log("");
     console.log("List to be sorted:");
     list.printVisualRepresentation();
-    bubbleSort(list, "desc");
+    bubbleSort(list, "asc");
     return list;
-}
-main();
+});
 
