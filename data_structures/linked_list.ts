@@ -1,7 +1,7 @@
 import { executeMain, runCLI, buildPointerRows } from "../cli.js";
 
 
-interface Node<T> {
+export interface Node<T> {
     value: T | undefined;
     next: Node<T> | null
 }
