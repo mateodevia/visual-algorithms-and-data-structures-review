@@ -2,8 +2,9 @@ import MyList from "../../data_structures/list.js";
 import { buildPointerRows } from "../../cli.js";
 
 const merge = (list1: MyList<number>, list2: MyList<number>, order: "asc" | "desc" = "asc"): MyList<number> => {
-    console.log("--------------------------------");
-    console.log('MERGING')
+    console.log("------------------------------------------------------");
+    console.log(`Merging [${list1.getVisualElements()}] with [${list2.getVisualElements()}]`)
+    console.log()
 
     const mergedList = new MyList<number>(list1.getSize() + list2.getSize());
 
@@ -81,6 +82,10 @@ export const mergeSort = (list: MyList<number>, order: "asc" | "desc" = "asc"): 
     for(let i = 0; i < length2; i++) {
         list2.set(i, list.get(length1 + i));
     }
+    console.log();
+    console.log(`Dividing [ ${list.getVisualElements()} ] into: `);
+    list1.printVisualRepresentation();
+    list2.printVisualRepresentation();
 
     const orderList1 = mergeSort(list1, order);
     const orderList2 = mergeSort(list2, order);
@@ -102,7 +107,7 @@ const printVisualRepresentation = (mergedList: MyList<number>, i: number, j: num
     console.log('');
     console.log(`${nextItem} was selected for merging`)
     console.log('');
-    printWithPointers("Merged: ", mergedList.getVisualElements(), { [k]: "k" });
+    printWithPointers("Merged list: ", mergedList.getVisualElements(), { [k]: "k" });
     console.log("------------");
 }
 
