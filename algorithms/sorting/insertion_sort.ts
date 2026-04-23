@@ -20,14 +20,18 @@ const swap = (list: MyList<number>, i: number, j: number): void => {
  */
 export const insertionSort = (list: MyList<number>, order: "asc" | "desc" = "asc") => {
     console.log("--------------------------------");
-    console.log("INSERTION SORT:");
+    console.log("INSERTION SORT (swaping version):");
     console.log("");
     console.log("✅ Means the item is already sorted");
+    console.log("j will be inserted in the sorted part of the array ensuring it remains sorted")
 
     for (let k = 0; k < list.getSize(); k++)
         if (list.get(k) === undefined) throw new Error("Cannot sort a list with undefined items");
 
     for (let i = 1; i < list.getSize(); i++) {
+        console.log('')
+        console.log(`New outer loop i = ${i} ------------------------------------------------`)
+        console.log('')
         for (let j = i; j > 0; j--) {
             printVisualRepresentation(list, i, j);
             const shouldSwap = order === "asc"
@@ -35,7 +39,8 @@ export const insertionSort = (list: MyList<number>, order: "asc" | "desc" = "asc
                 : list.get(j)! > list.get(j - 1)!;
             if (shouldSwap) {
                 console.log();
-                console.log(`Swapping ${list.get(j)} and ${list.get(j - 1)}:`);
+                console.log(`Swapping j (${list.get(j)}) and j-1 (${list.get(j - 1)}):`);
+                console.log();
                 swap(list, j, j - 1);
                 list.printVisualRepresentation();
             } else {
