@@ -30,12 +30,12 @@ const partition = (list: MyList<number>, low: number, high:number, order: "asc" 
     printVisualRepresentation(list.getSubList(low, high), low, i, j);
 
     while (i <= j) {
-        // move the i index to the right until it founds a number smaller than the chosen pivot
+        // move the i index to the right until it founds a number that should be at the right of the choosen pivot
         while(i <= j && (order === 'asc' && list.get(i)! < pivot || order === 'desc' && list.get(i)! > pivot)) {
             i++; 
             printVisualRepresentation(list.getSubList(low, high), low, i, j);
         }
-        // move the j index to the left until it founds a number grater than the chosen pivot
+        // move the j index to the left until it founds a number that should be to the left of the choosen pivot
         while(i <= j && (order === 'asc' && list.get(j)! > pivot || order === 'desc' && list.get(j)! < pivot)) {
             j--; 
             printVisualRepresentation(list.getSubList(low, high), low, i, j);
