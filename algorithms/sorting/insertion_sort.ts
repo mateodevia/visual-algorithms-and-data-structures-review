@@ -25,10 +25,10 @@ export const insertionSort = (list: MyList<number>, order: "asc" | "desc" = "asc
     console.log("✅ Means the item is already sorted");
     console.log("j will be inserted in the sorted part of the array ensuring it remains sorted")
 
-    for (let k = 0; k < list.getSize(); k++)
+    for (let k = 0; k < list.getLength(); k++)
         if (list.get(k) === undefined) throw new Error("Cannot sort a list with undefined items");
 
-    for (let i = 1; i < list.getSize(); i++) {
+    for (let i = 1; i < list.getLength(); i++) {
         console.log('')
         console.log(`New outer loop i = ${i} ------------------------------------------------`)
         console.log('')
@@ -48,11 +48,11 @@ export const insertionSort = (list: MyList<number>, order: "asc" | "desc" = "asc
             }
         }
     }
-    printVisualRepresentation(list, list.getSize(), 0);
+    printVisualRepresentation(list, list.getLength(), 0);
 };
 
 const printVisualRepresentation = (list: MyList<number>, i: number, j: number) => {
-    const n = list.getSize();
+    const n = list.getLength();
     const elements = Array.from({ length: n }, (_, k) => {
         const val = list.get(k);
         return val === undefined ? "_" : String(val);

@@ -35,7 +35,7 @@ const greedyChange = (coinSet: MyList<number>, debt: number, depth: number = 0, 
     let leastNumberOfCoins = Infinity;
 
     // Try all alternatives you have in the coin set
-    for(let i = 0; i < coinSet.getSize() - 1; i++) {
+    for(let i = 0; i < coinSet.getLength() - 1; i++) {
         const coin = coinSet.get(i)!;
         const remaining = debt - coin;
 

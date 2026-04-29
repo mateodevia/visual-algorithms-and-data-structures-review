@@ -6,7 +6,7 @@ const merge = (list1: MyList<number>, list2: MyList<number>, order: "asc" | "des
     console.log(`Merging [${list1.getVisualElements()}] with [${list2.getVisualElements()}]`)
     console.log()
 
-    const mergedList = new MyList<number>(list1.getSize() + list2.getSize());
+    const mergedList = new MyList<number>(list1.getLength() + list2.getLength());
 
     /* Index to iterate over list1 */
     let i = 0;
@@ -19,7 +19,7 @@ const merge = (list1: MyList<number>, list2: MyList<number>, order: "asc" | "des
     let k = 0;
 
     // Compare and pick while both lists have remaining elements
-    while (i < list1.getSize() && j < list2.getSize()) {
+    while (i < list1.getLength() && j < list2.getLength()) {
         const prevI = i, prevJ = j;
         const takeFromList1 = order === 'asc'
             ? list1.get(i)! <= list2.get(j)!
@@ -33,14 +33,14 @@ const merge = (list1: MyList<number>, list2: MyList<number>, order: "asc" | "des
     // NOTE: Only one of the lists will have elements at this point, so only one of the following whiles will be executed
 
     // If list1 has elements, those are the only ones missing, so they can be merged in order as list1 is already ordered
-    while (i < list1.getSize()) {
+    while (i < list1.getLength()) {
         mergedList.set(k, list1.get(i));
         printVisualRepresentation(mergedList, i, j, k, list1.get(i)!, list1, undefined);
         i++; k++;
     }
 
     // If list2 has elements, those are the only ones missing, so they can be merged in order as list2 is already ordered
-    while (j < list2.getSize()) {
+    while (j < list2.getLength()) {
         mergedList.set(k, list2.get(j));
         printVisualRepresentation(mergedList, i, j, k, list2.get(j)!, undefined, list2);
         j++; k++;
@@ -62,14 +62,14 @@ const merge = (list1: MyList<number>, list2: MyList<number>, order: "asc" | "des
  */
 export const mergeSort = (list: MyList<number>, order: "asc" | "desc" = "asc"): MyList<number> => {
 
-    if (list.getSize() === 1) return list;
+    if (list.getLength() === 1) return list;
 
-    for (let k = 0; k < list.getSize(); k++)
+    for (let k = 0; k < list.getLength(); k++)
         if (list.get(k) === undefined) throw new Error("Cannot sort a list with undefined items");
 
     // Divide the array in two, if it has an odd size, the second array will be larger by one
-    const length1 = Math.floor(list.getSize()/2);
-    const length2 = list.getSize() - length1;
+    const length1 = Math.floor(list.getLength()/2);
+    const length2 = list.getLength() - length1;
 
     // Clone the list into two separate lists
     const list1 = new MyList<number>(length1);

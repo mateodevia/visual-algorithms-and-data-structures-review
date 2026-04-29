@@ -23,7 +23,7 @@ class MyList<T> {
         this.items[index] = value;
     }
 
-    getSize() {
+    getLength() {
         return this.size;
     }
 
@@ -56,7 +56,7 @@ class MyList<T> {
     }
 
     getVisualElements(): string[] {
-        return Array.from({ length: this.getSize() }, (_, k) => {
+        return Array.from({ length: this.getLength() }, (_, k) => {
             const val = this.get(k);
             return val === undefined ? "_" : String(val);
         });

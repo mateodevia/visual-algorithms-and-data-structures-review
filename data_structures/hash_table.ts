@@ -13,7 +13,7 @@ class MyHashTable<T> {
     private _hash(key: string): number {
         let hash = 0;
         for (let i=0; i < key.length; i++) {
-            hash = (hash + key.charCodeAt(i) * i) % this.data.getSize();
+            hash = (hash + key.charCodeAt(i) * i) % this.data.getLength();
         }
         return hash;
     }
@@ -50,7 +50,7 @@ class MyHashTable<T> {
     }
 
     getVisualElements(): string[] {
-        return Array.from({ length: this.data.getSize() }, (_, index) => {
+        return Array.from({ length: this.data.getLength() }, (_, index) => {
             const bucket = this.data.get(index);
             if (!bucket) return `${index}: _`;
 

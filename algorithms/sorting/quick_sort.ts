@@ -76,7 +76,7 @@ const partition = (list: MyList<number>, low: number, high:number, order: "asc" 
 export const quickSort = (list: MyList<number>, low?: number, high?:number, order: "asc" | "desc" = "asc") => {
 
     const l = low ?? 0;
-    const h = high ?? list.getSize() - 1;
+    const h = high ?? list.getLength() - 1;
 
     if (l >= h) return list;
 
@@ -88,7 +88,7 @@ export const quickSort = (list: MyList<number>, low?: number, high?:number, orde
 
 const printVisualRepresentation = (list: MyList<number>, pivotIndex: number, i: number, j: number, pivotFinalIndex?: number) => {
     const elements: string[] = [];
-    for (let k = 0; k < list.getSize(); k++) {
+    for (let k = 0; k < list.getLength(); k++) {
         const val = list.get(k);
         elements.push(val === undefined ? "_" : String(val));
     }
@@ -139,7 +139,7 @@ function main() {
     console.log("List to be sorted:");
     list.printVisualRepresentation();
 
-    for (let k = 0; k < list.getSize(); k++)
+    for (let k = 0; k < list.getLength(); k++)
         if (list.get(k) === undefined) throw new Error("Cannot sort a list with undefined items");
     quickSort(list);
     list.printVisualRepresentation();

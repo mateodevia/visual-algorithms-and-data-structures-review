@@ -27,15 +27,15 @@ export const bubbleSort = (list: MyList<number>, order: "asc" | "desc" = "asc") 
     console.log("");
     console.log(`j will be compared with the the next item, if is ${order === 'asc' ? 'bigger' : 'smaller'}, it will be swaped`);
 
-    for (let k = 0; k < list.getSize(); k++)
+    for (let k = 0; k < list.getLength(); k++)
         if (list.get(k) === undefined) throw new Error("Cannot sort a list with undefined items");
 
-    for (let i = 0; i < list.getSize() - 1; i++) {
+    for (let i = 0; i < list.getLength() - 1; i++) {
         console.log('')
         console.log(`New outer loop i = ${i} ------------------------------------------------`)
         console.log('')
         let swapped = false;
-        for (let j = 0; j < list.getSize() - i - 1; j++) {
+        for (let j = 0; j < list.getLength() - i - 1; j++) {
             printVisualRepresentation(list, i, j);
             const shouldSwap = order === "asc"
                 ? list.get(j)! > list.get(j + 1)!
@@ -51,12 +51,12 @@ export const bubbleSort = (list: MyList<number>, order: "asc" | "desc" = "asc") 
         }
         if (!swapped) break;
     }
-    printVisualRepresentation(list, list.getSize(), 0);
+    printVisualRepresentation(list, list.getLength(), 0);
     return list;
 };
 
 const printVisualRepresentation = (list: MyList<number>, i: number, j: number) => {
-    const n = list.getSize();
+    const n = list.getLength();
     const elements = Array.from({ length: n }, (_, k) => {
         const val = list.get(k);
         return val === undefined ? "_" : String(val);

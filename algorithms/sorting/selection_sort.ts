@@ -28,15 +28,15 @@ export const bubbleSort = (list: MyList<number>, order: "asc" | "desc" = "asc") 
     console.log("");
     console.log("✅ Means the item is already sorted");
 
-    for (let k = 0; k < list.getSize(); k++)
+    for (let k = 0; k < list.getLength(); k++)
         if (list.get(k) === undefined) throw new Error("Cannot sort a list with undefined items");
 
-    for (let i = 0; i < list.getSize() - 1; i++) {
+    for (let i = 0; i < list.getLength() - 1; i++) {
         console.log('')
         console.log(`New outer loop i = ${i} ------------------------------------------------`)
         console.log('')
         let winner = -1;
-        for (let j = i; j < list.getSize(); j++) {
+        for (let j = i; j < list.getLength(); j++) {
             console.log("--------------------------------");
             printVisualRepresentation({ list, pointers: { i, j, w: winner}});
 
@@ -71,7 +71,7 @@ export const bubbleSort = (list: MyList<number>, order: "asc" | "desc" = "asc") 
     console.log("--------------------------------");
     console.log("Ending algorithm with:");
     console.log('')
-    printVisualRepresentation({ list, pointers: {}, sortedUntil: list.getSize() });
+    printVisualRepresentation({ list, pointers: {}, sortedUntil: list.getLength() });
     return list;
 };
 
@@ -84,7 +84,7 @@ const printVisualRepresentation = ({
     pointers: { i?: number; j?: number; w?: number };
     sortedUntil?: number;
 }) => {
-    const n = list.getSize();
+    const n = list.getLength();
     const elements = Array.from({ length: n }, (_, k) => {
         const val = list.get(k);
         return val === undefined ? "_" : String(val);
