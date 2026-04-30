@@ -7,10 +7,23 @@ import {
 } from "../cli.js";
 
 
-interface Node<T> {
+export class Node<T> {
     value: T;
     right: Node<T> | null;
     left: Node<T> | null;
+
+    constructor(value: T, left: Node<T> | null = null, right: Node<T> | null = null) {
+        this.value = value;
+        this.left = left;
+        this.right = right;
+    }
+
+    get children(): readonly Node<T>[] {
+        const res = [];
+        if (this.left) res.push(this.left);
+        if (this.right) res.push(this.right);
+        return res;
+    }
 }
 
 class MyBinarySearchTree<T> {
@@ -42,13 +55,13 @@ class MyBinarySearchTree<T> {
         }
     }
 
+    getRoot() {
+        return this.root;
+    }
+
     insert (value: T) {
         if (!this.root) {
-            this.root = {
-                value,
-                right: null,
-                left: null,
-            }
+            this.root = new Node(value);
             return;
         }
 
@@ -57,22 +70,14 @@ class MyBinarySearchTree<T> {
         while(true) {
             if (value < current.value) {
                 if (!current.left) {
-                    current.left = {
-                        value,
-                        right: null,
-                        left: null,
-                    };
+                    current.left = new Node(value);
                     break;
                 }
                 current = current.left;
 
             } else {
                 if (!current.right) {
-                    current.right = {
-                        value,
-                        right: null,
-                        left: null,
-                    };
+                    current.right = new Node(value);
                     break;
                 }
                 current = current.right;

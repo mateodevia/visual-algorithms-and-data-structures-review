@@ -36,6 +36,10 @@ class MyQueue<T> {
         }
     }
 
+    getLength () {
+        return this.length;
+    }
+
     /**
      * Inserts a new node at the rear (`last`).
      *
@@ -50,7 +54,12 @@ class MyQueue<T> {
             next: this.last,
         }
 
+        if (this.length === 0) {
+            this.first = newNode
+        }
+
         this.last = newNode;
+
         this.length++;
     }
 
@@ -60,24 +69,29 @@ class MyQueue<T> {
      * Time complexity:  O(n) — calls {@link MyQueue.getNodeAtIndex} at `length - 2` when length > 1
      * Space complexity: O(1)
      */
-    dequeue() {
+    dequeue(): Node<T> | null {
         if (this.length === 0) {
             console.error('The queue is empty');
-            return;
+            return null;
         }
 
         if (this.length === 1) {
+            const res = this.first;
             this.first = null;
             this.last = null;
             this.length --;
-            return;
+            return res;
         }
 
         const second = this.getNodeAtIndex(this.length - 2)!;
         second.next = null;
 
+        const res = this.first;
+
         this.first = second
         this.length --;
+
+        return res;
     }
 
     /**
