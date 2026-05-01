@@ -51,6 +51,8 @@ const depthFirstSearch = <T>(tree: MyBinarySearchTree<T>, nodeAnalyzer: (node: N
     orderFunction(root, nodeAnalyzer);
 }
 
+// TODO Make it graph compliant
+
 
 executeMain("depth_first_search.ts", () => {
     const tree = new MyBinarySearchTree<number>(true);
