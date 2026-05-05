@@ -3,13 +3,11 @@
  * Use {@link Node} from this repo — fields are `value`, `left`, `right` (not `val`).
  */
 
+import { depthFirstSearch, DFSOrder } from "../../algorithms/searching/depth_first_search.js";
 import { executeMain } from "../../cli.js";
 import MyBinarySearchTree, { Node } from "../../data_structures/binary_search_tree.js";
 
 export const maxDepth = function (tree: MyBinarySearchTree<number>): number {
-    const root = tree.getRoot();
-
-    if (root === null) return 0;
 
     const preOrder = (node: Node<number>, depth: number) => {
         let leftDepth = depth;
@@ -29,7 +27,23 @@ export const maxDepth = function (tree: MyBinarySearchTree<number>): number {
         return res;
     };
 
-    return preOrder(root, 1);
+    return depthFirstSearch(tree, (node: Node<number>, depth) => {
+        let leftDepth = depth;
+        let rightDepth = depth;
+
+        if (node.left) {
+            leftDepth = preOrder(node.left, depth + 1);
+        }
+
+        if (node.right) {
+            rightDepth = preOrder(node.right, depth + 1);
+        }
+        const res = Math.max(leftDepth, rightDepth);
+
+        console.log(`Calculated depth for node ${node.value}: ${res}`)
+
+        return res;
+    }, DFSOrder.PRE_ORDER, 1)!;
 };
 
 executeMain("0_max_depth.ts", () => {

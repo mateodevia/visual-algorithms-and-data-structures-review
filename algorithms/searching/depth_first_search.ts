@@ -1,35 +1,38 @@
 import { executeMain } from "../../cli.js";
 import MyBinarySearchTree, { Node } from "../../data_structures/binary_search_tree.js";
 
-const moveInOrder = <T>(node: Node<T>, nodeAnalyzer: (node: Node<T>) => boolean) => {
+const moveInOrder = <T>(node: Node<T>, nodeAnalyzer: (node: Node<T>, ...args: any[]) => any, ...args: any[]) => {
     if (node.left) {
-        moveInOrder(node.left, nodeAnalyzer);
+        moveInOrder(node.left, nodeAnalyzer, ...args);
     }
-    nodeAnalyzer(node);
+    let res = nodeAnalyzer(node, ...args);
     if (node.right) {
-        moveInOrder(node.right, nodeAnalyzer);
+        moveInOrder(node.right, nodeAnalyzer, ...args);
     }
+
+    return res;
 }
 
-const movePreOrder = <T>(node: Node<T>, nodeAnalyzer: (node: Node<T>) => boolean) => {
-    nodeAnalyzer(node);
+const movePreOrder = <T>(node: Node<T>, nodeAnalyzer: (node: Node<T>, ...args: any[]) => any, ...args: any[]) => {
+    let res = nodeAnalyzer(node, ...args);
     if (node.left) {
-        movePreOrder(node.left, nodeAnalyzer);
+        movePreOrder(node.left, nodeAnalyzer, ...args);
     }
     if (node.right) {
-        movePreOrder(node.right, nodeAnalyzer);
+        movePreOrder(node.right, nodeAnalyzer, ...args);
     }
+    return res;
 }
 
 
-const movePostOrder = <T>(node: Node<T>, nodeAnalyzer: (node: Node<T>) => boolean) => {
+const movePostOrder = <T>(node: Node<T>, nodeAnalyzer: (node: Node<T>, ...args: any[]) => any, ...args: any[]) => {
     if (node.left) {
-        movePostOrder(node.left, nodeAnalyzer);
+        movePostOrder(node.left, nodeAnalyzer, ...args);
     }
     if (node.right) {
-        movePostOrder(node.right, nodeAnalyzer);
+        movePostOrder(node.right, nodeAnalyzer, ...args);
     }
-    nodeAnalyzer(node);
+    return nodeAnalyzer(node, ...args);
 }
 
 export const enum DFSOrder {
@@ -38,17 +41,22 @@ export const enum DFSOrder {
     POST_ORDER = 'POST_ORDER'
 }
 
-const orderFunctionMapper: Record<DFSOrder, <T>(node: Node<T>, nodeAnalyzer: (node: Node<T>) => boolean) => void> = {
+const orderFunctionMapper: Record<DFSOrder, <T>(node: Node<T>, nodeAnalyzer: (node: Node<T>, ...args: any[]) => any) => void> = {
     [DFSOrder.PRE_ORDER]: movePreOrder,
     [DFSOrder.IN_ORDER]: moveInOrder,
     [DFSOrder.POST_ORDER]: movePostOrder,
 }
 
-const depthFirstSearch = <T>(tree: MyBinarySearchTree<T>, nodeAnalyzer: (node: Node<T>) => boolean, order: DFSOrder = DFSOrder.IN_ORDER) => {
+export const depthFirstSearch = <T, R>(
+    tree: MyBinarySearchTree<T>,
+    nodeAnalyzer: (node: Node<T>, ...args: any[]) => R,
+    order: DFSOrder = DFSOrder.IN_ORDER,
+    ...initialArgs: any[]
+): R | void => {
     const root = tree.getRoot();
     if (!root) return;
     const orderFunction = orderFunctionMapper[order];
-    orderFunction(root, nodeAnalyzer);
+    return (orderFunction as any)(root, nodeAnalyzer, ...initialArgs);
 }
 
 // TODO Make it graph compliant
