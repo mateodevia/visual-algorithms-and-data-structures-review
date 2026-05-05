@@ -6,7 +6,7 @@ const fibonacci = (n: number): number => {
         if (cache[n]) return cache[n];
         console.log('Calculating fib of', n)
 
-        if (n<2) return n;
+        if (n<3) return n;
     
         cache[n] = fib(n-1) + fib(n-2);
         return cache[n];
@@ -16,5 +16,5 @@ const fibonacci = (n: number): number => {
 
 executeMain("0_fibonacci.ts", () => {
 
-    console.log(fibonacci(10));
+    console.log(fibonacci(3));
 });
