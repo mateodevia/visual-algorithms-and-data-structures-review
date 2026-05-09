@@ -149,7 +149,7 @@ class MyArray<T> {
     }
 }
 
-executeMain('array.ts', () => {
+executeMain('data_structures/array.ts', () => {
     runCLI({
         s: ([index, value], arr) => arr.set(Number(index), Number(value)),
         g: ([index], arr) => console.log('Retrieved value', arr.get(Number(index))),
